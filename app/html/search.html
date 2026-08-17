@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Busca com IA — SounAD</title>
+<meta name="description" content="Busque músicas por mood, momento ou energia usando IA. SounAD integra curadoria inteligente com o catálogo do Spotify.">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a href="../../index.html" class="nav-brand">
+    <span class="dot"></span>
+    SOUN<span class="ad">AD</span>
+  </a>
+  <div class="nav-links">
+    <a href="../../index.html" class="nav-link"><span>Início</span></a>
+    <a href="dashboard.html" class="nav-link"><span>Playlists</span></a>
+    <a href="search.html" class="nav-link active"><span>Busca IA</span></a>
+  </div>
+</nav>
+
+<!-- DECOR -->
+<div class="deco" style="top:-12%;left:-12%;width:40vw;min-width:320px;opacity:.2;transform:rotate(160deg)" data-ribbon></div>
+<div class="deco" style="bottom:-20%;right:-14%;width:42vw;min-width:340px;opacity:.18" data-ribbon></div>
+
+<div class="page-wrap">
+  <main class="main-area">
+    <div class="container" style="padding-top:32px;padding-bottom:60px">
+
+      <!-- HEADER -->
+      <div class="page-head">
+        <div class="page-head-left">
+          <h1>
+            <span style="background:var(--grad-accent);-webkit-background-clip:text;background-clip:text;color:transparent">Busca Inteligente</span>
+          </h1>
+          <p>Descreva um mood, momento ou energia — a IA sugere as músicas perfeitas.</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <!-- Mode toggle -->
+          <div class="mode-toggle" id="modeToggle">
+            <button type="button" class="active" data-mode="ia" id="modeIABtn">
+              🤖 Modo IA
+            </button>
+            <button type="button" data-mode="spotify" id="modeSpotifyBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.1-10.561-1.14-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.361.18.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.6-1.559.3z"/></svg>
+              Spotify
+            </button>
+          </div>
+
+          <!-- Settings -->
+          <div class="key-pop-wrap">
+            <button class="btn btn-ghost btn-icon" id="keyToggle" title="Configurar APIs" type="button" aria-label="Configurações de API">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+            </button>
+            <div class="key-pop" id="keyPop" role="dialog" aria-label="Configurações de API">
+              <div class="key-pop-section">
+                <h5>
+                  🤖 Curadoria com IA
+                  <span class="badge badge-purple">Groq</span>
+                </h5>
+                <div class="field">
+                  <label for="groqKey">Chave da API</label>
+                  <input type="password" class="inp" id="groqKey" placeholder="gsk_..." autocomplete="off">
+                </div>
+                <p class="key-pop-note">Crie gratuitamente em <a href="https://console.groq.com" target="_blank" rel="noopener">console.groq.com</a>. Salvo só no seu navegador.</p>
+              </div>
+              <div class="divider" style="margin:14px 0"></div>
+              <div class="key-pop-section">
+                <h5>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.1-10.561-1.14-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.361.18.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.6-1.559.3z"/></svg>
+                  Spotify API
+                </h5>
+                <div class="field">
+                  <label for="spotifyId">Client ID</label>
+                  <input type="text" class="inp" id="spotifyId" placeholder="Client ID" autocomplete="off">
+                </div>
+                <div class="field" style="margin-bottom:4px">
+                  <label for="spotifySecret">Client Secret</label>
+                  <input type="password" class="inp" id="spotifySecret" placeholder="Client Secret" autocomplete="off">
+                </div>
+                <p class="key-pop-note">App grátis em <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a>. Tudo fica só no seu navegador.</p>
+              </div>
+              <button class="btn btn-primary" style="width:100%;margin-top:14px;justify-content:center" id="saveKeysBtn">Salvar configurações</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH PANEL -->
+      <div class="glass-panel" style="padding:28px;margin-bottom:24px">
+        <!-- IA mode description -->
+        <div id="iaModeInfo" style="margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:32px;height:32px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🤖</div>
+            <div>
+              <div style="font-size:14px;font-weight:600">Modo IA — Curadoria por mood</div>
+              <div style="font-size:12px;color:var(--muted)">Descreva livremente. A IA entende contexto e sugere as melhores músicas.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spotify mode description -->
+        <div id="spotifyModeInfo" style="margin-bottom:20px;display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba(29,185,84,.12);border:1px solid rgba(29,185,84,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.1-10.561-1.14-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.361.18.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.6-1.559.3z"/></svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:600">Modo Spotify — Busca no catálogo</div>
+              <div style="font-size:12px;color:var(--muted)">Busque por nome, artista ou álbum no catálogo completo do Spotify.</div>
+            </div>
+          </div>
+        </div>
+
+        <form id="searchForm">
+          <div class="search-bar">
+            <input type="text" class="inp" id="query"
+              placeholder="Ex: músicas para treinar pesado, lo-fi para estudar, saudade dos anos 90..."
+              autocomplete="off" aria-label="Busca de músicas">
+            <button class="btn btn-primary" type="submit" id="searchBtn" style="min-width:110px;justify-content:center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Buscar
+            </button>
+          </div>
+        </form>
+
+        <!-- Suggestions -->
+        <div id="suggestions" class="suggestions" style="margin-top:18px">
+          <!-- Populated by JS based on mode -->
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div id="statusWrap" style="display:none">
+        <div class="status-msg" id="status">
+          <div class="spinner"></div>
+          <span id="statusText">Buscando...</span>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="resultsSection" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:600;color:var(--text-2)" id="resultsLabel"></div>
+          <div style="display:flex;gap:8px">
+            <select class="inp" id="globalPlaylistSelect" style="width:auto;font-size:13px;padding:8px 12px;border-radius:8px" title="Playlist destino">
+              <option value="">Selecionar playlist...</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="addAllBtn" style="display:none">+ Adicionar todas</button>
+          </div>
+        </div>
+        <div id="results"></div>
+      </div>
+
+      <!-- ERROR -->
+      <div id="errorWrap" style="display:none">
+        <div class="empty-state" id="errorState">
+          <div class="pulse-ring">⚠️</div>
+          <strong id="errorTitle">Ops, algo deu errado</strong>
+          <p id="errorMsg"></p>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('errorWrap').style.display='none'">Fechar</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="foot-brand">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <span>SounAD <strong>© 2026</strong></span>
+  </div>
+  <div class="foot-links">
+    <a href="../../index.html">Início</a>
+    <a href="dashboard.html">Playlists</a>
+    <a href="search.html">Busca IA</a>
+  </div>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/app.js"></script>
+<script>
+  /* ====== SEARCH PAGE LOGIC ====== */
+  let mode = 'ia';
+  let currentAudio = null;
+  let lastTracks = [];
+
+  const iaSuggestions = [
+    '🏋️ Músicas para treinar pesado',
+    '📚 Lo-fi para estudar',
+    '🌅 Acordar com energia',
+    '🎉 Festa anos 2000',
+    '😔 Dia chuvoso e pensativo',
+    '🚀 Foco e produtividade',
+    '🏖️ Verão e praia',
+    '💔 Depois do término',
+  ];
+
+  const spotifySuggestions = [
+    '🎵 The Weeknd',
+    '🎵 Sabrina Carpenter',
+    '🎵 Kendrick Lamar',
+    '🎵 Dua Lipa',
+    '🎵 Peso Pluma',
+    '🎵 Taylor Swift',
+  ];
+
+  /* Nav scroll */
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').style.background =
+      window.scrollY > 10 ? 'rgba(0,0,0,.95)' : 'rgba(0,0,0,.75)';
+  });
+
+  /* Load keys */
+  document.getElementById('groqKey').value = getGroqKey();
+  const creds = getSpotifyCreds();
+  document.getElementById('spotifyId').value = creds.id;
+  document.getElementById('spotifySecret').value = creds.secret;
+
+  /* Save keys button */
+  document.getElementById('saveKeysBtn').addEventListener('click', () => {
+    setGroqKey(document.getElementById('groqKey').value.trim());
+    setSpotifyCreds(
+      document.getElementById('spotifyId').value.trim(),
+      document.getElementById('spotifySecret').value.trim()
+    );
+    document.getElementById('keyPop').classList.remove('open');
+    showToast('Configurações salvas!', 'success');
+  });
+
+  /* Key popover */
+  document.getElementById('keyToggle').addEventListener('click', () => {
+    document.getElementById('keyPop').classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    const pop = document.getElementById('keyPop');
+    const tog = document.getElementById('keyToggle');
+    if (!pop.contains(e.target) && e.target !== tog && !tog.contains(e.target)) {
+      pop.classList.remove('open');
+    }
+  });
+
+  /* Mode toggle */
+  document.getElementById('modeToggle').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-mode]');
+    if (!btn) return;
+    mode = btn.dataset.mode;
+    document.querySelectorAll('#modeToggle button').forEach(b => b.classList.toggle('active', b === btn));
+
+    const q = document.getElementById('query');
+    const iaModeInfo = document.getElementById('iaModeInfo');
+    const spotifyModeInfo = document.getElementById('spotifyModeInfo');
+
+    if (mode === 'ia') {
+      q.placeholder = 'Ex: músicas para treinar pesado, lo-fi para estudar, saudade dos anos 90...';
+      iaModeInfo.style.display = 'block';
+      spotifyModeInfo.style.display = 'none';
+    } else {
+      q.placeholder = 'Ex: The Weeknd, Blinding Lights, álbum After Hours...';
+      iaModeInfo.style.display = 'none';
+      spotifyModeInfo.style.display = 'block';
+    }
+    renderSuggestions();
+    clearResults();
+  });
+
+  /* Render mode suggestions */
+  function renderSuggestions() {
+    const chips = mode === 'ia' ? iaSuggestions : spotifySuggestions;
+    const el = document.getElementById('suggestions');
+    el.innerHTML = chips.map(s => `
+      <button type="button" class="suggestion-chip" data-q="${escapeHtml(s.replace(/^[^\w\s]+\s*/,''))}">
+        ${escapeHtml(s)}
+      </button>`).join('');
+    el.querySelectorAll('.suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.getElementById('query').value = chip.dataset.q;
+        document.getElementById('searchForm').requestSubmit();
+      });
+    });
+  }
+
+  /* Escape HTML */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  /* Playlist select options */
+  function playlistOptions(selectedId = '') {
+    const list = getPlaylists();
+    if (!list.length) return '<option value="">— Criar playlist primeiro —</option>';
+    return '<option value="">Selecionar playlist...</option>' +
+      list.map(p => `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${escapeHtml(p.name)} (${p.tracks.length})</option>`).join('');
+  }
+
+  function updateGlobalPlaylistSelect() {
+    const active = localStorage.getItem('sounad_active_playlist') || '';
+    document.getElementById('globalPlaylistSelect').innerHTML = playlistOptions(active);
+  }
+
+  function clearResults() {
+    document.getElementById('resultsSection').style.display = 'none';
+    document.getElementById('errorWrap').style.display = 'none';
+    document.getElementById('statusWrap').style.display = 'none';
+    document.getElementById('results').innerHTML = '';
+    lastTracks = [];
+  }
+
+  /* Render IA results as cards */
+  function renderIA(tracks) {
+    if (!tracks.length) return '<div class="empty-state"><div class="pulse-ring">🎵</div><strong>Sem sugestões</strong><p>Tente descrever diferente o que você quer ouvir.</p></div>';
+    return `<div class="ai-results-grid">` + tracks.map((t, i) => `
+      <div class="ai-card" style="animation-delay:${i * 0.06}s">
+        <div class="ai-card-header">
+          <div class="ai-card-art">🎵</div>
+          <div class="ai-card-info">
+            <div class="ai-card-title">${escapeHtml(t.title)}</div>
+            <div class="ai-card-artist">${escapeHtml(t.artist)}</div>
+          </div>
+        </div>
+        ${t.reason ? `<div class="ai-card-reason">${escapeHtml(t.reason)}</div>` : ''}
+        <div class="ai-card-actions">
+          <select id="pl-${i}" class="inp" style="font-size:13px;padding:8px 10px;border-radius:8px;flex:1">
+            ${playlistOptions()}
+          </select>
+          <button class="btn btn-ghost btn-sm" data-add="${i}" style="flex-shrink:0">+ Playlist</button>
+        </div>
+      </div>`).join('') + '</div>';
+  }
+
+  /* Render Spotify results as track rows */
+  function renderSpotify(tracks) {
+    if (!tracks.length) return '<div class="empty-state"><div class="pulse-ring">🔍</div><strong>Nada encontrado</strong><p>Tente outro nome, artista ou álbum.</p></div>';
+    updateGlobalPlaylistSelect();
+    document.getElementById('addAllBtn').style.display = 'inline-flex';
+    return tracks.map((t, i) => `
+      <div class="track-row" style="animation-delay:${i * 0.04}s">
+        <span class="track-num">${i + 1}</span>
+        ${t.image
+          ? `<img class="track-art" src="${t.image}" alt="${escapeHtml(t.title)}" loading="lazy">`
+          : `<div class="track-art-placeholder">🎵</div>`
+        }
+        <div class="track-meta">
+          <strong>${escapeHtml(t.title)}</strong>
+          <span>${escapeHtml(t.artist)}${t.album ? ' · ' + escapeHtml(t.album) : ''}</span>
+        </div>
+        <div class="track-actions">
+          ${t.previewUrl ? `<button class="play-btn" data-preview="${t.previewUrl}" title="Pré-escuta">▶</button>` : ''}
+          ${t.spotifyUrl
+            ? `<a href="${t.spotifyUrl}" target="_blank" rel="noopener" class="btn btn-xs" style="background:rgba(29,185,84,.12);border:1px solid rgba(29,185,84,.3);color:#1DB954" title="Abrir no Spotify">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.1-10.561-1.14-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.361.18.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.6-1.559.3z"/></svg>
+              </a>`
+            : ''
+          }
+          <button class="btn btn-xs btn-ghost" data-add="${i}">+ Playlist</button>
+        </div>
+      </div>`).join('');
+  }
+
+  /* Bind results actions */
+  function bindActions(tracks) {
+    const container = document.getElementById('results');
+
+    // Individual add buttons
+    container.querySelectorAll('button[data-add]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.add);
+        const pid = (container.querySelector(`#pl-${i}`) || {}).value
+          || document.getElementById('globalPlaylistSelect').value;
+        if (!pid) { showToast('Selecione uma playlist primeiro', 'error'); return; }
+        const t = tracks[i];
+        addTrackToPlaylist(pid, {
+          title: t.title, artist: t.artist,
+          album: t.album || '', image: t.image || null,
+          previewUrl: t.previewUrl || null, spotifyUrl: t.spotifyUrl || null
+        });
+        btn.textContent = '✓ Adicionado';
+        btn.disabled = true;
+        btn.style.color = '#1DB954';
+        showToast(`"${t.title}" adicionado!`, 'success');
+      });
+    });
+
+    // Play buttons
+    container.querySelectorAll('button[data-preview]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (currentAudio && !currentAudio.paused && btn.dataset.playing) {
+          currentAudio.pause();
+          btn.innerHTML = '▶'; delete btn.dataset.playing; return;
+        }
+        if (currentAudio) {
+          currentAudio.pause();
+          container.querySelectorAll('.play-btn[data-playing]').forEach(b => {
+            b.innerHTML = '▶'; delete b.dataset.playing;
+          });
+        }
+        currentAudio = new Audio(btn.dataset.preview);
+        currentAudio.play().catch(() => showToast('Prévia não disponível', 'error'));
+        btn.innerHTML = '❚❚'; btn.dataset.playing = '1';
+        currentAudio.onended = () => { btn.innerHTML = '▶'; delete btn.dataset.playing; };
+      });
+    });
+  }
+
+  /* Add all button */
+  document.getElementById('addAllBtn').addEventListener('click', () => {
+    const pid = document.getElementById('globalPlaylistSelect').value;
+    if (!pid) { showToast('Selecione uma playlist primeiro', 'error'); return; }
+    let added = 0;
+    lastTracks.forEach(t => {
+      addTrackToPlaylist(pid, {
+        title: t.title, artist: t.artist,
+        album: t.album || '', image: t.image || null,
+        previewUrl: t.previewUrl || null, spotifyUrl: t.spotifyUrl || null
+      });
+      added++;
+    });
+    showToast(`${added} faixas adicionadas!`, 'success');
+    document.querySelectorAll('button[data-add]').forEach(b => {
+      b.textContent = '✓ Adicionado'; b.disabled = true; b.style.color = '#1DB954';
+    });
+  });
+
+  /* SEARCH SUBMIT */
+  document.getElementById('searchForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const q = document.getElementById('query').value.trim();
+    if (!q) return;
+
+    clearResults();
+    document.getElementById('statusWrap').style.display = 'block';
+    document.getElementById('statusText').textContent =
+      mode === 'ia' ? '🤖 IA processando sua busca...' : '🔍 Buscando no catálogo do Spotify...';
+    document.getElementById('searchBtn').disabled = true;
+    document.getElementById('searchBtn').innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px"></div> Buscando';
+
+    try {
+      let tracks = [];
+      if (mode === 'ia') {
+        tracks = await aiSearchTracks(q);
+        lastTracks = tracks;
+        document.getElementById('statusWrap').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'block';
+        document.getElementById('resultsLabel').innerHTML =
+          `<span style="color:var(--purple-2)">🤖 IA</span> — ${tracks.length} sugestão(ões) para <em>"${escapeHtml(q)}"</em>`;
+        document.getElementById('results').innerHTML = renderIA(tracks);
+        updateGlobalPlaylistSelect();
+      } else {
+        tracks = await spotifySearchTracks(q);
+        lastTracks = tracks;
+        document.getElementById('statusWrap').style.display = 'none';
+        document.getElementById('resultsSection').style.display = 'block';
+        document.getElementById('resultsLabel').innerHTML = tracks.length
+          ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="#1DB954" style="display:inline;vertical-align:middle"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.1-10.561-1.14-.418.12-.779-.18-.899-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.479.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14C9.6 9.9 15 10.56 18.72 12.84c.361.18.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.62.539.3.719 1.02.419 1.56-.299.42-1.02.6-1.559.3z"/></svg> <span style="color:#1DB954">Spotify</span> — ${tracks.length} resultado(s) para <em>"${escapeHtml(q)}"</em>`
+          : `Nenhum resultado para "${escapeHtml(q)}"`;
+        document.getElementById('results').innerHTML = renderSpotify(tracks);
+      }
+      bindActions(tracks);
+    } catch (err) {
+      document.getElementById('statusWrap').style.display = 'none';
+      document.getElementById('errorWrap').style.display = 'block';
+      document.getElementById('errorTitle').textContent =
+        mode === 'ia' ? 'Erro na curadoria com IA' : 'Erro ao buscar no Spotify';
+      document.getElementById('errorMsg').textContent = err.message;
+    } finally {
+      document.getElementById('searchBtn').disabled = false;
+      document.getElementById('searchBtn').innerHTML =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Buscar';
+    }
+  });
+
+  /* Init suggestions */
+  renderSuggestions();
+</script>
+</body>
+</html>
